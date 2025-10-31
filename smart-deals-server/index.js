@@ -31,7 +31,7 @@ async function run() {
     const productsCollection = db.collection("products");
 
     app.get("/products", async (req, res) => {
-      const cursor = productsCollection.find();
+      const cursor = productsCollection.find().sort({ price_min: 1 });
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -75,7 +75,6 @@ async function run() {
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    await client.close();
   }
 }
 run().catch(console.dir);
