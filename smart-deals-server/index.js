@@ -32,6 +32,8 @@ async function run() {
     const bidsCollection = db.collection("bids");
     const usersCollection = db.collection("users");
 
+    // USER API
+
     app.post("/users", async (req, res) => {
       const newUser = req.body;
       const email = req.body.email;
@@ -44,6 +46,8 @@ async function run() {
         res.send(result);
       }
     });
+
+    // PRODUCTS API
 
     app.get("/products", async (req, res) => {
       // const projectFields = { title: 1, price_min: 1, price_max: 1, image: 1 };
@@ -62,6 +66,17 @@ async function run() {
       }
 
       const cursor = productsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/latest-products", async (req, res) => {
+      const cursor = productsCollection
+        .find()
+        .sort({
+          created_at: -1,
+        })
+        .limit(6);
       const result = await cursor.toArray();
       res.send(result);
     });
