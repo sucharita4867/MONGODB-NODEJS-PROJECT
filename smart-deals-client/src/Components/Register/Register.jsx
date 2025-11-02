@@ -1,6 +1,19 @@
-import React from "react";
+import React, { use } from "react";
+import { AuthContext } from "../../Context/AuthContext";
 
 const Register = () => {
+  const { signInWithGoogle } = use(AuthContext);
+
+  const handleGoogleSignIn = (e) => {
+    e.preventDefault();
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
       <h1 className="text-5xl font-bold">Register now!</h1>
@@ -16,7 +29,10 @@ const Register = () => {
           <button className="btn btn-neutral mt-4">Login</button>
         </fieldset>
         {/* google */}
-        <button className="btn bg-white text-black border-[#e5e5e5]">
+        <button
+          onClick={handleGoogleSignIn}
+          className="btn bg-white text-black border-[#e5e5e5]"
+        >
           <svg
             aria-label="Google logo"
             width="16"
