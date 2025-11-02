@@ -7,6 +7,15 @@
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
-  --color-primary: blue;
+  /* --color-primary: [#]; */
   --color-secondary: teal;
+}
+
+/* custom button override */
+.btn-Primary {
+  @apply bg-gradient-to-r from-[#5B2BE1] to-[#A46FF4] text-white font-medium py-2 px-4 rounded-lg border-none transition-opacity duration-200;
+}
+
+.btn-Primary:hover {
+  @apply opacity-90;
 }
