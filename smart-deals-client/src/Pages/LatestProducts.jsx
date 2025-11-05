@@ -3,7 +3,7 @@ import Products from "./Products";
 
 const LatestProducts = ({ latestProductsPromise }) => {
   const products = use(latestProductsPromise);
-  console.log(products);
+  // console.log(products);
   return (
     <div className="mt-8">
       <h2 className="text-4xl font-bold">
