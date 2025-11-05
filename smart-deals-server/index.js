@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -19,10 +21,6 @@ const client = new MongoClient(uri, {
   },
 });
 
-app.get("/", (req, res) => {
-  res.send("smart server is running");
-});
-
 async function run() {
   try {
     await client.connect();
@@ -33,7 +31,6 @@ async function run() {
     const usersCollection = db.collection("users");
 
     // USER API
-
     app.post("/users", async (req, res) => {
       const newUser = req.body;
       const email = req.body.email;
@@ -48,7 +45,6 @@ async function run() {
     });
 
     // PRODUCTS API
-
     app.get("/products", async (req, res) => {
       // const projectFields = { title: 1, price_min: 1, price_max: 1, image: 1 };
       // const cursor = productsCollection
@@ -67,6 +63,11 @@ async function run() {
 
       const cursor = productsCollection.find(query);
       const result = await cursor.toArray();
+      res.send("result");
+    });
+
+    app.get("/allProducts", async (req, res) => {
+      const result = await productsCollection.find().toArray();
       res.send(result);
     });
 
@@ -81,7 +82,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("products/:id", async (req, res) => {
+    app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await productsCollection.findOne(query);
@@ -148,6 +149,10 @@ async function run() {
   }
 }
 run().catch(console.dir);
+
+app.get("/", (req, res) => {
+  res.send("smart server is running");
+});
 
 app.listen(port, () => {
   console.log(`start server is running on port : ${port}`);
