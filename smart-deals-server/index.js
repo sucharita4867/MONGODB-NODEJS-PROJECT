@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -10,8 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  "mongodb+srv://smartDBUser:E7SLHcTEiMnVu0Xd@cluster0.phhktud.mongodb.net/?appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.phhktud.mongodb.net/?appName=Cluster0`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -45,26 +43,58 @@ async function run() {
     });
 
     // PRODUCTS API
+    // app.get("/products", async (req, res) => {
+    //   const projectFields = { title: 1, price_min: 1, price_max: 1, image: 1 };
+    //   const cursor1 = productsCollection
+    //     .find()
+    //     .sort({ price_min: 1 })
+    //     .skip(4)
+    //     .limit(3)
+    //     .project(projectFields);
+
+    //   console.log(req.query);
+    //   const email = req.query.email;
+    //   const query = {};
+    //   if (email) {
+    //     query.email = email;
+    //   }
+
+    //   const cursor = productsCollection.find(query);
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+
+    // ----------------
+    // PRODUCTS API
     app.get("/products", async (req, res) => {
-      // const projectFields = { title: 1, price_min: 1, price_max: 1, image: 1 };
-      // const cursor = productsCollection
-      //   .find()
-      //   .sort({ price_min: 1 })
-      //   .skip(4)
-      //   .limit(3)
-      //   .project(projectFields);
+      try {
+        const projectFields = {
+          title: 1,
+          price_min: 1,
+          price_max: 1,
+          image: 1,
+        };
+        const email = req.query.email;
+        const query = {};
+        if (email) {
+          query.email = email;
+        }
+        const cursor = productsCollection
+          .find(query)
+          .sort({ price_min: 1 })
+          .skip(4)
+          .limit(3)
+          .project(projectFields);
 
-      console.log(req.query);
-      const email = req.query.email;
-      const query = {};
-      if (email) {
-        query.email = email;
+        const result = await cursor.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).send({ message: "Internal Server Error" });
       }
-
-      const cursor = productsCollection.find(query);
-      const result = await cursor.toArray();
-      res.send("result");
     });
+
+    // ----------------
 
     app.get("/allProducts", async (req, res) => {
       const result = await productsCollection.find().toArray();
@@ -124,6 +154,14 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/products/bids/:productsId", async (req, res) => {
+      const productId = req.params.productsId;
+      const query = { product: productId };
+      const cursor = bidsCollection.find(query).sort({ bid_price: -1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.get("/bids", async (req, res) => {
       const email = req.query.email;
       const query = {};
@@ -135,9 +173,26 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/bids", async (req, res) => {
+      const query = {};
+      if (query.email) {
+        query.buyer_email = email;
+      }
+      const cursor = bidsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post("/bids", async (req, res) => {
       const newBid = req.body;
       const result = await bidsCollection.insertOne(newBid);
+      res.send(result);
+    });
+
+    app.delete("/bids/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bidsCollection.deleteOne(query);
       res.send(result);
     });
 
