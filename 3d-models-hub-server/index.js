@@ -28,6 +28,7 @@ async function run() {
 
     app.get("/models", async (req, res) => {
       const result = await modelCollection.find().toArray();
+      console.log(result)
       res.send(result);
     });
 
